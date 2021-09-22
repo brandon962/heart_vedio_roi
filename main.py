@@ -75,7 +75,7 @@ class videoGUI:
 
         # has done
         self.label_done = Label(bottom_frame, text='Done',
-                                width=5, background='#282a36', foreground='white')
+                                width=5, background='#282a36', foreground='green')
         self.label_done.grid(row=0, column=0, padx=5, pady=5)
 
         # pre Button
@@ -174,7 +174,7 @@ class videoGUI:
                 y = int(y)
                 x2 = int(x2)
                 y2 = int(y2)
-                print(type, x, y, x2, y2)
+                # print(type, x, y, x2, y2)
                 self.start_x = x
                 self.start_y = y
                 self.end_x = x2
