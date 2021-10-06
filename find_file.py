@@ -22,5 +22,5 @@ for file in filelist:
 fp.close()
 
 fp = open("log.txt", "w")
-fp.write("1")
+fp.write("0")
 fp.close()
