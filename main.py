@@ -101,6 +101,9 @@ class videoGUI:
 
         if self.init:
             self.init = False
+            fp = open("log.txt", "r")
+            self.file_ptr = int(fp.readline())
+            fp.close()
             self.open_file()
             self.play_video()
         self.window.mainloop()
@@ -130,7 +133,7 @@ class videoGUI:
     def open_file(self):
         self.pause = False
         self.filename = filelist[self.file_ptr]
-        print(self.filename)
+        print(self.file_ptr,self.filename)
         self.cap = cv2.VideoCapture(self.filename)
         self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -206,6 +209,10 @@ class videoGUI:
         self.end_y = 0
         self.readfile_flag = True
         self.file_ptr += 1
+        fp = open("log.txt", "w")
+        fp.write(str(self.file_ptr))
+        fp.close()
+
         if self.file_ptr >= len(filelist):
             messagebox.showerror(
                 title='Video file not found', message='This is end.')
@@ -220,6 +227,9 @@ class videoGUI:
         self.end_x = 0
         self.end_y = 0
         self.file_ptr -= 1
+        fp = open("log.txt", "w")
+        fp.write(str(self.file_ptr))
+        fp.close()
         if self.file_ptr < 0:
             messagebox.showerror(
                 title='Video file not found', message='This is first.')

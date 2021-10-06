@@ -19,3 +19,8 @@ fp = open("file_list.txt", "w")
 for file in filelist:
     print(file)
     fp.write(file+"\n")
+fp.close()
+
+fp = open("log.txt", "w")
+fp.write("1")
+fp.close()
