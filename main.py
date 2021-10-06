@@ -6,10 +6,8 @@ import PIL.ImageTk
 import cv2
 import os
 
-total_filename = []
 nowPath = os.getcwd()
 filelist = []
-
 
 def walk(path):
     for item in os.listdir(path):
@@ -19,7 +17,6 @@ def walk(path):
         else:
             if subpath.find(".avi") != -1:
                 filelist.append(subpath)
-
 
 class videoGUI:
 
@@ -35,6 +32,7 @@ class videoGUI:
         self.roi_id = None
         self.file_ptr = 0
         self.init = True
+        self.readfile_flag = True
         top_frame = Frame(self.window, background='#282a36')
         top_frame.pack(side=LEFT, pady=5)
 
@@ -114,13 +112,13 @@ class videoGUI:
 
     def btn1_func(self, event):
         if str(event.type) == 'ButtonPress':
-            print("start at", event.x, event.y)
+            # print("start at", event.x, event.y)
             self.start_x = event.x
             self.start_y = event.y
             self.draw_flag = True
         elif str(event.type) == 'ButtonRelease':
-            print("end at", event.x, event.y)
-            print()
+            # print("end at", event.x, event.y)
+            # print()
             self.draw_flag = False
 
     def btn1_motion(self, event):
@@ -162,30 +160,32 @@ class videoGUI:
             self.canvas.create_image(0, 0, image=self.photo, anchor=NW)
             self.draw_roi()
 
-        file_path = str("roi\\"+self.filename.split('\\')
-                        [-1].split('.')[0]+".txt")
-        if os.path.isfile(file_path):
-            fp = open(file_path)
-            try:
-                type = fp.readline()
-                x, y = fp.readline().split(" ")
-                x2, y2 = fp.readline().split(" ")
-                x = int(x)
-                y = int(y)
-                x2 = int(x2)
-                y2 = int(y2)
-                # print(type, x, y, x2, y2)
-                self.start_x = x
-                self.start_y = y
-                self.end_x = x2
-                self.end_y = y2
-                self.label_done.grid()
-                if x == 0 and y == 0 and x2 == 0 and y2 == 0:
+        if self.readfile_flag :
+            self.readfile_flag = False
+            file_path = str("roi\\"+self.filename.split('\\')
+                            [-1].split('.')[0]+".txt")
+            if os.path.isfile(file_path):
+                fp = open(file_path)
+                try:
+                    type = fp.readline()
+                    x, y = fp.readline().split(" ")
+                    x2, y2 = fp.readline().split(" ")
+                    x = int(x)
+                    y = int(y)
+                    x2 = int(x2)
+                    y2 = int(y2)
+                    # print(type, x, y, x2, y2)
+                    self.start_x = x
+                    self.start_y = y
+                    self.end_x = x2
+                    self.end_y = y2
+                    self.label_done.grid()
+                    if x == 0 and y == 0 and x2 == 0 and y2 == 0:
+                        self.label_done.grid_remove()
+                except:
                     self.label_done.grid_remove()
-            except:
+            else:
                 self.label_done.grid_remove()
-        else:
-            self.label_done.grid_remove()
 
         if not self.pause:
             self.btn_play['state'] = tkinter.DISABLED
@@ -200,6 +200,11 @@ class videoGUI:
         self.pause = True
 
     def next_file(self):
+        self.start_x = 0
+        self.start_y = 0
+        self.end_x = 0
+        self.end_y = 0
+        self.readfile_flag = True
         self.file_ptr += 1
         if self.file_ptr >= len(filelist):
             messagebox.showerror(
@@ -209,6 +214,11 @@ class videoGUI:
         self.open_file()
 
     def pre_file(self):
+        self.readfile_flag = True
+        self.start_x = 0
+        self.start_y = 0
+        self.end_x = 0
+        self.end_y = 0
         self.file_ptr -= 1
         if self.file_ptr < 0:
             messagebox.showerror(
@@ -250,7 +260,10 @@ class videoGUI:
 ##### End Class #####
 
 
-walk(nowPath)
+fp = open("file_list.txt", "r")
+filelist = fp.readlines()
+fp.close()
+print("file number : ",len(filelist))
 try:
     os.mkdir("roi")
 except:
