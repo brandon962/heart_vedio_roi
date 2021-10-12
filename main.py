@@ -36,7 +36,11 @@ class videoGUI:
         self.scale_flag_nwse = False
         self.scale_flag_nesw = False
         self.scale_flag_ns = False
-        self.scale_flag_ew = False
+        self.scale_flag_we = False
+        self.scale_flag_nwse1 = False
+        self.scale_flag_nesw1 = False
+        self.scale_flag_ns1 = False
+        self.scale_flag_we1 = False
         self.new_start_flag = True
         self.roi_id = None
         self.roi_sq = []
@@ -126,30 +130,30 @@ class videoGUI:
         self.roi_id = self.canvas.create_rectangle(
             self.start_x, self.start_y, self.end_x, self.end_y, outline="#F00", width=2)
 
-        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, self.start_y-4,
-                           self.start_x+4, self.start_y+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, (self.start_y+self.end_y) /
-                           2-4, self.start_x+4, (self.start_y+self.end_y)/2+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, self.end_y-4,
-                           self.start_x+4, self.end_y+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-4, self.start_y-4,
-                           (self.start_x+self.end_x)/2+4, self.start_y+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-4, self.start_y-4,
-                           self.end_x+4, self.start_y+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-4, self.end_y-4,
-                           (self.start_x+self.end_x)/2+4, self.end_y+4, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-4, (self.start_y+self.end_y) /
-                           2-4, self.end_x+4, (self.start_y+self.end_y)/2+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, self.start_y-5,
+                           self.start_x+5, self.start_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, (self.start_y+self.end_y) /
+                           2-5, self.start_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, self.end_y-5,
+                           self.start_x+5, self.end_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-5, self.start_y-5,
+                           (self.start_x+self.end_x)/2+5, self.start_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-5, self.start_y-5,
+                           self.end_x+5, self.start_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-5, self.end_y-5,
+                           (self.start_x+self.end_x)/2+5, self.end_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-5, (self.start_y+self.end_y) /
+                           2-5, self.end_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
         self.roi_sq.append(self.canvas.create_rectangle(
-            self.end_x-4, self.end_y-4, self.end_x+4, self.end_y+4, outline="#F00", width=1, fill="white"))
+            self.end_x-5, self.end_y-5, self.end_x+5, self.end_y+5, outline="#F00", width=1, fill="white"))
 
     def btn1_func(self, event):
         if str(event.type) == 'ButtonPress':
             # print("start at", event.x, event.y)
-            if self.scale_flag_ew == self.scale_flag_nesw == self.scale_flag_ns == self.scale_flag_nwse == False:
-                # self.start_x = event.x
-                # self.start_y = event.y
-                self.draw_flag = True
+            # if self.scale_flag_ew == self.scale_flag_nesw == self.scale_flag_ns == self.scale_flag_nwse == False:
+            # self.start_x = event.x
+            # self.start_y = event.y
+            self.draw_flag = True
         elif str(event.type) == 'ButtonRelease':
             # print("end at", event.x, event.y)
             # print()
@@ -157,6 +161,7 @@ class videoGUI:
             self.scale_flag_nwse = False
             self.new_flag = False
             self.new_start_flag = True
+            self.scale_flag_we = self.scale_flag_we1 = self.scale_flag_ns = self.scale_flag_ns1 = self.scale_flag_nwse = self.scale_flag_nwse1 = self.scale_flag_nesw = self.scale_flag_nesw1 = False
             if self.draw_flag == False:
                 if (self.start_x > self.end_x):
                     self.start_x, self.end_x = self.end_x, self.start_x
@@ -167,26 +172,54 @@ class videoGUI:
         if self.start_x == self.start_y == self.end_x == self.end_y == 0:
             self.new_flag = True
 
-        if self.scale_flag_nwse == True or (self.new_flag == False and (event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > self.start_y-4 and event.y < self.start_y+4)):
+        if self.scale_flag_nwse == True or (self.new_flag == False and (event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > self.start_y-5 and event.y < self.start_y+5)):
             self.canvas.config(cursor="size_nw_se")
             if self.draw_flag == True:
                 self.scale_flag_nwse = True
                 self.start_x, self.start_y = event.x, event.y
                 self.draw_roi()
-        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+        elif self.scale_flag_nwse1 == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
             self.canvas.config(cursor="size_nw_se")
-        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > self.start_y-4 and event.y < self.start_y+4:
+            if self.draw_flag == True:
+                self.scale_flag_nwse1 = True
+                self.end_x, self.end_y = event.x, event.y
+                self.draw_roi()
+        elif self.scale_flag_nesw == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > self.start_y-5 and event.y < self.start_y+5:
             self.canvas.config(cursor="size_ne_sw")
-        elif event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+            if self.draw_flag == True:
+                self.scale_flag_nesw = True
+                self.end_x, self.start_y = event.x, event.y
+                self.draw_roi()
+        elif self.scale_flag_nesw1 == True or event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
             self.canvas.config(cursor="size_ne_sw")
-        elif event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > (self.start_y+self.end_y)/2-4 and event.y < (self.start_y+self.end_y)/2+4:
+            if self.draw_flag == True:
+                self.scale_flag_nesw1 = True
+                self.start_x, self.end_y = event.x, event.y
+                self.draw_roi()
+        elif self.scale_flag_we == True or event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > (self.start_y+self.end_y)/2-5 and event.y < (self.start_y+self.end_y)/2+5:
             self.canvas.config(cursor="size_we")
-        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > (self.start_y+self.end_y)/2-4 and event.y < (self.start_y+self.end_y)/2+4:
+            if self.draw_flag == True:
+                self.scale_flag_we = True
+                self.start_x = event.x
+                self.draw_roi()
+        elif self.scale_flag_we1 == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > (self.start_y+self.end_y)/2-5 and event.y < (self.start_y+self.end_y)/2+5:
             self.canvas.config(cursor="size_we")
-        elif event.x > (self.start_x+self.end_x)/2-4 and event.x < (self.start_x+self.end_x)/2+4 and event.y > self.start_y-4 and event.y < self.start_y+4:
+            if self.draw_flag == True:
+                self.scale_flag_we1 = True
+                self.end_x = event.x
+                self.draw_roi()
+        elif self.scale_flag_ns == True or event.x > (self.start_x+self.end_x)/2-5 and event.x < (self.start_x+self.end_x)/2+5 and event.y > self.start_y-5 and event.y < self.start_y+5:
             self.canvas.config(cursor="size_ns")
-        elif event.x > (self.start_x+self.end_x)/2-4 and event.x < (self.start_x+self.end_x)/2+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+            if self.draw_flag == True:
+                self.scale_flag_ns = True
+                self.start_y = event.y
+                self.draw_roi()
+        elif self.scale_flag_ns1 == True or event.x > (self.start_x+self.end_x)/2-5 and event.x < (self.start_x+self.end_x)/2+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
             self.canvas.config(cursor="size_ns")
+            if self.draw_flag == True:
+                self.scale_flag_ns1 = True
+                self.end_y = event.y
+                self.draw_roi()
         else:
             self.canvas.config(cursor="")
 
@@ -203,7 +236,6 @@ class videoGUI:
         #         self.start_x, self.end_x = self.end_x, self.start_x
         #     if (self.start_y > self.end_y):
         #         self.start_y, self.end_y = self.end_y, self.start_y
-        
 
     def open_file(self):
         self.pause = False
@@ -222,10 +254,11 @@ class videoGUI:
                 return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         # replay the video
         except:
-            self.cap = cv2.VideoCapture(self.filename)
-            self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-            self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-            self.canvas.config(width=self.width, height=self.height)
+            # self.cap = cv2.VideoCapture(self.filename)
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            # self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            # self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            # self.canvas.config(width=self.width, height=self.height)
             if self.cap.isOpened():
                 ret, frame = self.cap.read()
                 return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
