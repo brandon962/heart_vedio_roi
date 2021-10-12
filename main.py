@@ -1,3 +1,4 @@
+from re import T
 from tkinter import *
 from tkinter import messagebox
 import tkinter
@@ -9,6 +10,7 @@ import os
 nowPath = os.getcwd()
 filelist = []
 
+
 def walk(path):
     for item in os.listdir(path):
         subpath = os.path.join(path, item)
@@ -17,6 +19,7 @@ def walk(path):
         else:
             if subpath.find(".avi") != -1:
                 filelist.append(subpath)
+
 
 class videoGUI:
 
@@ -29,7 +32,14 @@ class videoGUI:
         self.end_x = 0
         self.end_y = 0
         self.draw_flag = False
+        self.new_flag = False
+        self.scale_flag_nwse = False
+        self.scale_flag_nesw = False
+        self.scale_flag_ns = False
+        self.scale_flag_ew = False
+        self.new_start_flag = True
         self.roi_id = None
+        self.roi_sq = []
         self.file_ptr = 0
         self.init = True
         self.readfile_flag = True
@@ -97,7 +107,7 @@ class videoGUI:
             bottom_frame, text="Pause", width=10, command=self.pause_video, background='#23252f', foreground='white')
         self.btn_pause.grid(row=2, column=1, padx=5, pady=5)
 
-        self.delay = 15  # ms
+        self.delay = 5  # ms
 
         if self.init:
             self.init = False
@@ -110,30 +120,95 @@ class videoGUI:
 
     def draw_roi(self):
         self.canvas.delete(self.roi_id)
+        for i in self.roi_sq:
+            self.canvas.delete(i)
+
         self.roi_id = self.canvas.create_rectangle(
             self.start_x, self.start_y, self.end_x, self.end_y, outline="#F00", width=2)
+
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, self.start_y-4,
+                           self.start_x+4, self.start_y+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, (self.start_y+self.end_y) /
+                           2-4, self.start_x+4, (self.start_y+self.end_y)/2+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-4, self.end_y-4,
+                           self.start_x+4, self.end_y+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-4, self.start_y-4,
+                           (self.start_x+self.end_x)/2+4, self.start_y+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-4, self.start_y-4,
+                           self.end_x+4, self.start_y+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-4, self.end_y-4,
+                           (self.start_x+self.end_x)/2+4, self.end_y+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-4, (self.start_y+self.end_y) /
+                           2-4, self.end_x+4, (self.start_y+self.end_y)/2+4, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(
+            self.end_x-4, self.end_y-4, self.end_x+4, self.end_y+4, outline="#F00", width=1, fill="white"))
 
     def btn1_func(self, event):
         if str(event.type) == 'ButtonPress':
             # print("start at", event.x, event.y)
-            self.start_x = event.x
-            self.start_y = event.y
-            self.draw_flag = True
+            if self.scale_flag_ew == self.scale_flag_nesw == self.scale_flag_ns == self.scale_flag_nwse == False:
+                # self.start_x = event.x
+                # self.start_y = event.y
+                self.draw_flag = True
         elif str(event.type) == 'ButtonRelease':
             # print("end at", event.x, event.y)
             # print()
             self.draw_flag = False
+            self.scale_flag_nwse = False
+            self.new_flag = False
+            self.new_start_flag = True
+            if self.draw_flag == False:
+                if (self.start_x > self.end_x):
+                    self.start_x, self.end_x = self.end_x, self.start_x
+                if (self.start_y > self.end_y):
+                    self.start_y, self.end_y = self.end_y, self.start_y
 
     def btn1_motion(self, event):
-        if self.draw_flag == True:
-            self.end_x = event.x
-            self.end_y = event.y
-            self.draw_roi()
+        if self.start_x == self.start_y == self.end_x == self.end_y == 0:
+            self.new_flag = True
+
+        if self.scale_flag_nwse == True or (self.new_flag == False and (event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > self.start_y-4 and event.y < self.start_y+4)):
+            self.canvas.config(cursor="size_nw_se")
+            if self.draw_flag == True:
+                self.scale_flag_nwse = True
+                self.start_x, self.start_y = event.x, event.y
+                self.draw_roi()
+        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+            self.canvas.config(cursor="size_nw_se")
+        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > self.start_y-4 and event.y < self.start_y+4:
+            self.canvas.config(cursor="size_ne_sw")
+        elif event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+            self.canvas.config(cursor="size_ne_sw")
+        elif event.x > self.start_x-4 and event.x < self.start_x+4 and event.y > (self.start_y+self.end_y)/2-4 and event.y < (self.start_y+self.end_y)/2+4:
+            self.canvas.config(cursor="size_we")
+        elif event.x > self.end_x-4 and event.x < self.end_x+4 and event.y > (self.start_y+self.end_y)/2-4 and event.y < (self.start_y+self.end_y)/2+4:
+            self.canvas.config(cursor="size_we")
+        elif event.x > (self.start_x+self.end_x)/2-4 and event.x < (self.start_x+self.end_x)/2+4 and event.y > self.start_y-4 and event.y < self.start_y+4:
+            self.canvas.config(cursor="size_ns")
+        elif event.x > (self.start_x+self.end_x)/2-4 and event.x < (self.start_x+self.end_x)/2+4 and event.y > self.end_y-4 and event.y < self.end_y+4:
+            self.canvas.config(cursor="size_ns")
+        else:
+            self.canvas.config(cursor="")
+
+            if self.draw_flag == True:
+                if self.new_start_flag == True:
+                    self.new_start_flag = False
+                    self.start_x, self.start_y = event.x, event.y
+                self.new_flag = True
+                self.end_x = event.x
+                self.end_y = event.y
+                self.draw_roi()
+        # if self.draw_flag == False:
+        #     if (self.start_x > self.end_x):
+        #         self.start_x, self.end_x = self.end_x, self.start_x
+        #     if (self.start_y > self.end_y):
+        #         self.start_y, self.end_y = self.end_y, self.start_y
+        
 
     def open_file(self):
         self.pause = False
         self.filename = filelist[self.file_ptr]
-        print(self.file_ptr,self.filename)
+        print(self.file_ptr, self.filename)
         self.cap = cv2.VideoCapture(self.filename)
         self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -163,7 +238,7 @@ class videoGUI:
             self.canvas.create_image(0, 0, image=self.photo, anchor=NW)
             self.draw_roi()
 
-        if self.readfile_flag :
+        if self.readfile_flag:
             self.readfile_flag = False
             file_path = str("roi\\"+self.filename.split('\\')
                             [-1].split('.')[0]+".txt")
@@ -235,7 +310,7 @@ class videoGUI:
                 title='Video file not found', message='This is first.')
             self.file_ptr = 0
             return
-        self.start_x=self.start_y=self.end_x=self.end_y=0
+        self.start_x = self.start_y = self.end_x = self.end_y = 0
         self.open_file()
 
     def write_roi(self, heart_type):
@@ -245,7 +320,7 @@ class videoGUI:
         fp.write(str(self.start_x)+" "+str(self.start_y) + "\n")
         fp.write(str(self.end_x)+" "+str(self.end_y))
         fp.close()
-        self.start_x=self.start_y=self.end_x=self.end_y=0
+        self.start_x = self.start_y = self.end_x = self.end_y = 0
         self.next_file()
 
     def heart_a2c(self):
@@ -273,7 +348,7 @@ class videoGUI:
 fp = open("file_list.txt", "r")
 filelist = fp.readlines()
 fp.close()
-print("file number : ",len(filelist))
+print("file number : ", len(filelist))
 try:
     os.mkdir("roi")
 except:
