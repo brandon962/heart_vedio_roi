@@ -48,18 +48,18 @@ class videoGUI:
         self.init = True
         self.readfile_flag = True
         self.done_set = set()
-        self.skip=IntVar()
+        self.skip = IntVar()
+
     def run(self):
         # self.skip
         top_frame = Frame(self.window, background='#282a36')
         top_frame.pack(side=LEFT, pady=5)
 
         info_frame = Frame(self.window, background='#282a36')
-        info_frame.pack(side=TOP,pady=5)
+        info_frame.pack(side=TOP, pady=5)
 
         Label_frame = Frame(self.window, background='#282a36')
         Label_frame.pack(pady=5)
-
 
         switch_frame = Frame(self.window, background='#282a36')
         switch_frame.pack(side=BOTTOM, pady=5)
@@ -76,17 +76,17 @@ class videoGUI:
         self.canvas.bind('<Motion>', self.btn1_motion)
         self.canvas.pack()
 
-        #info 
+        # info
         self.label_info_name = Label(info_frame, text='File name\nSerial number\nType',
-                                width=10, background='#282a36', foreground='white', justify=LEFT, anchor="w",font=("Helvetica","11"))
+                                     width=10, background='#282a36', foreground='white', justify=LEFT, anchor="w", font=("Helvetica", "11"))
         self.label_info_name.grid(row=0, column=0, padx=0, pady=5)
         self.label_info_content = Label(info_frame, text=' :  A3VF7I82\n :  10004\n :',
-                                width=17, background='#282a36', foreground='white', justify=LEFT, anchor="w",font=("Helvetica","11"))
+                                        width=17, background='#282a36', foreground='white', justify=LEFT, anchor="w", font=("Helvetica", "11"))
         self.label_info_content.grid(row=0, column=1, padx=0, pady=5)
 
         # type button
         self.label_done = Label(Label_frame, text='Done',
-                                width=12, background='#282a36', foreground='green', justify=LEFT, anchor="w",font=("Helvetica","11"))
+                                width=12, background='#282a36', foreground='green', justify=LEFT, anchor="w", font=("Helvetica", "11"))
         self.label_done.grid(row=0, column=0, padx=5, pady=5)
 
         self.btn_a2c = Button(Label_frame, text="A2C",
@@ -98,35 +98,36 @@ class videoGUI:
         self.btn_a3c.grid(row=2, column=0, padx=10, pady=10)
 
         self.btn_a4c = Button(Label_frame, text="A4C",
-                             width=15, command=self.Heart_a4c, background='#23252f', foreground='white')
+                              width=15, command=self.Heart_a4c, background='#23252f', foreground='white')
         self.btn_a4c.grid(row=3, column=0, padx=10, pady=10)
 
         self.btn_ta2c = Button(Label_frame, text="TISSUE A2C",
-                             width=15, command=self.Heart_ta2c, background='#23252f', foreground='white')
+                               width=15, command=self.Heart_ta2c, background='#23252f', foreground='white')
         self.btn_ta2c.grid(row=4, column=0, padx=10, pady=10)
 
         self.btn_ta4c = Button(Label_frame, text="TISSUE A4C",
-                             width=15, command=self.Heart_ta4c, background='#23252f', foreground='white')
+                               width=15, command=self.Heart_ta4c, background='#23252f', foreground='white')
         self.btn_ta4c.grid(row=4, column=1, padx=10, pady=10)
 
         self.btn_pmid = Button(Label_frame, text="PSAX-MID",
-                             width=15, command=self.Heart_pmid, background='#23252f', foreground='white')
+                               width=15, command=self.Heart_pmid, background='#23252f', foreground='white')
         self.btn_pmid.grid(row=1, column=1, padx=10, pady=10)
 
         self.btn_pbasal = Button(Label_frame, text="PSAX-BASAL",
-                             width=15, command=self.Heart_pbasal, background='#23252f', foreground='white')
+                                 width=15, command=self.Heart_pbasal, background='#23252f', foreground='white')
         self.btn_pbasal.grid(row=2, column=1, padx=10, pady=10)
 
         self.btn_papical = Button(Label_frame, text="PSAX-APICAL",
-                             width=15, command=self.Heart_papical, background='#23252f', foreground='white')
+                                  width=15, command=self.Heart_papical, background='#23252f', foreground='white')
         self.btn_papical.grid(row=3, column=1, padx=10, pady=10)
 
         self.CheckVar1 = IntVar()
         # pre Button
         # self.check_skip = Checkbutton(switch_frame, text='Skip Done', background='#282a36', foreground='white', variable = self.CheckVar1, onvalue = 1, offvalue = 0,)
         # self.check_skip.grid(row=0,column=0,padx=0,pady=0)
-        self.check_skip = Checkbutton(switch_frame, text = "Skip Done", variable = self.CheckVar1, onvalue = 1, offvalue = 0,fg = 'white', selectcolor='#23252f', bg="#282a36",activebackground='#282a36', justify=LEFT, anchor="w",width=13,height=3)
-        self.check_skip.grid(row=0,column=0,padx=0,pady=0)
+        self.check_skip = Checkbutton(switch_frame, text="Skip Done", variable=self.CheckVar1, onvalue=1, offvalue=0, fg='white',
+                                      selectcolor='#23252f', bg="#282a36", activebackground='#282a36', justify=LEFT, anchor="w", width=13, height=3)
+        self.check_skip.grid(row=0, column=0, padx=0, pady=0)
 
         # self.check_skip.pack()
 
