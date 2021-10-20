@@ -47,14 +47,22 @@ class videoGUI:
         self.file_ptr = 0
         self.init = True
         self.readfile_flag = True
+        self.done_set = set()
+        self.skip=IntVar()
+    def run(self):
+        # self.skip
         top_frame = Frame(self.window, background='#282a36')
         top_frame.pack(side=LEFT, pady=5)
 
-        right_frame = Frame(self.window, background='#282a36')
-        right_frame.pack(pady=5)
+        info_frame = Frame(self.window, background='#282a36')
+        info_frame.pack(side=TOP,pady=5)
 
-        bottom_frame = Frame(self.window, background='#282a36')
-        bottom_frame.pack(side=BOTTOM, pady=5)
+        Label_frame = Frame(self.window, background='#282a36')
+        Label_frame.pack(pady=5)
+
+
+        switch_frame = Frame(self.window, background='#282a36')
+        switch_frame.pack(side=BOTTOM, pady=5)
 
         # bottom_frame2 = Frame(self.window, background='#282a36')
         # bottom_frame2.pack(side=BOTTOM, pady=5)
@@ -68,47 +76,78 @@ class videoGUI:
         self.canvas.bind('<Motion>', self.btn1_motion)
         self.canvas.pack()
 
-        # type button
-        self.btn_a2c = Button(right_frame, text="A2C",
-                              width=15, command=self.heart_a2c, background='#23252f', foreground='white')
-        self.btn_a2c.grid(row=0, column=0, padx=10, pady=10)
-        self.btn_a3c = Button(right_frame, text="A3C",
-                              width=15, command=self.heart_a3c, background='#23252f', foreground='white')
-        self.btn_a3c.grid(row=1, column=0, padx=10, pady=10)
-        self.btn_tA = Button(right_frame, text="typeA",
-                             width=15, command=self.heart_typeA, background='#23252f', foreground='white')
-        self.btn_tA.grid(row=2, column=0, padx=10, pady=10)
-        self.btn_tB = Button(right_frame, text="typeB",
-                             width=15, command=self.heart_typeB, background='#23252f', foreground='white')
-        self.btn_tB.grid(row=3, column=0, padx=10, pady=10)
-        self.btn_tC = Button(right_frame, text="typeC",
-                             width=15, command=self.heart_typeC, background='#23252f', foreground='white')
-        self.btn_tC.grid(row=4, column=0, padx=10, pady=10)
+        #info 
+        self.label_info_name = Label(info_frame, text='File name\nSerial number\nType',
+                                width=10, background='#282a36', foreground='white', justify=LEFT, anchor="w",font=("Helvetica","11"))
+        self.label_info_name.grid(row=0, column=0, padx=0, pady=5)
+        self.label_info_content = Label(info_frame, text=' :  A3VF7I82\n :  10004\n :',
+                                width=17, background='#282a36', foreground='white', justify=LEFT, anchor="w",font=("Helvetica","11"))
+        self.label_info_content.grid(row=0, column=1, padx=0, pady=5)
 
-        # has done
-        self.label_done = Label(bottom_frame, text='Done',
-                                width=5, background='#282a36', foreground='green')
+        # type button
+        self.label_done = Label(Label_frame, text='Done',
+                                width=12, background='#282a36', foreground='green', justify=LEFT, anchor="w",font=("Helvetica","11"))
         self.label_done.grid(row=0, column=0, padx=5, pady=5)
 
+        self.btn_a2c = Button(Label_frame, text="A2C",
+                              width=15, command=self.Heart_a2c, background='#23252f', foreground='white')
+        self.btn_a2c.grid(row=1, column=0, padx=10, pady=10)
+
+        self.btn_a3c = Button(Label_frame, text="A3C",
+                              width=15, command=self.Heart_a3c, background='#23252f', foreground='white')
+        self.btn_a3c.grid(row=2, column=0, padx=10, pady=10)
+
+        self.btn_a4c = Button(Label_frame, text="A4C",
+                             width=15, command=self.Heart_a4c, background='#23252f', foreground='white')
+        self.btn_a4c.grid(row=3, column=0, padx=10, pady=10)
+
+        self.btn_ta2c = Button(Label_frame, text="TISSUE A2C",
+                             width=15, command=self.Heart_ta2c, background='#23252f', foreground='white')
+        self.btn_ta2c.grid(row=4, column=0, padx=10, pady=10)
+
+        self.btn_ta4c = Button(Label_frame, text="TISSUE A4C",
+                             width=15, command=self.Heart_ta4c, background='#23252f', foreground='white')
+        self.btn_ta4c.grid(row=4, column=1, padx=10, pady=10)
+
+        self.btn_pmid = Button(Label_frame, text="PSAX-MID",
+                             width=15, command=self.Heart_pmid, background='#23252f', foreground='white')
+        self.btn_pmid.grid(row=1, column=1, padx=10, pady=10)
+
+        self.btn_pbasal = Button(Label_frame, text="PSAX-BASAL",
+                             width=15, command=self.Heart_pbasal, background='#23252f', foreground='white')
+        self.btn_pbasal.grid(row=2, column=1, padx=10, pady=10)
+
+        self.btn_papical = Button(Label_frame, text="PSAX-APICAL",
+                             width=15, command=self.Heart_papical, background='#23252f', foreground='white')
+        self.btn_papical.grid(row=3, column=1, padx=10, pady=10)
+
+        self.CheckVar1 = IntVar()
         # pre Button
-        self.btn_pre = Button(bottom_frame, text='pre',
-                              width=10, command=self.pre_file, background='#23252f', foreground='white')
+        # self.check_skip = Checkbutton(switch_frame, text='Skip Done', background='#282a36', foreground='white', variable = self.CheckVar1, onvalue = 1, offvalue = 0,)
+        # self.check_skip.grid(row=0,column=0,padx=0,pady=0)
+        self.check_skip = Checkbutton(switch_frame, text = "Skip Done", variable = self.CheckVar1, onvalue = 1, offvalue = 0,fg = 'white', selectcolor='#23252f', bg="#282a36",activebackground='#282a36', justify=LEFT, anchor="w",width=13,height=3)
+        self.check_skip.grid(row=0,column=0,padx=0,pady=0)
+
+        # self.check_skip.pack()
+
+        self.btn_pre = Button(switch_frame, text='pre',
+                              width=15, command=self.Pre_file, background='#23252f', foreground='white')
         self.btn_pre.grid(row=1, column=0, padx=5, pady=5)
 
         # next Button
-        self.btn_next = Button(bottom_frame, text='next',
-                               width=10, command=self.next_file, background='#23252f', foreground='white')
+        self.btn_next = Button(switch_frame, text='next',
+                               width=15, command=self.next_file, background='#23252f', foreground='white')
         self.btn_next.grid(row=1, column=1, padx=5, pady=5)
 
         # Play Button
-        self.btn_play = Button(bottom_frame, text="Play",
-                               width=10, command=self.play_video, background='#23252f', foreground='white')
+        self.btn_play = Button(switch_frame, text="Play",
+                               width=15, command=self.play_video, background='#23252f', foreground='white')
         self.btn_play.grid(row=2, column=0, padx=5, pady=5)
         self.btn_play['state'] = tkinter.DISABLED
 
         # Pause Button
         self.btn_pause = Button(
-            bottom_frame, text="Pause", width=10, command=self.pause_video, background='#23252f', foreground='white')
+            switch_frame, text="Pause", width=15, command=self.pause_video, background='#23252f', foreground='white')
         self.btn_pause.grid(row=2, column=1, padx=5, pady=5)
 
         self.delay = 5  # ms
@@ -120,6 +159,9 @@ class videoGUI:
             fp.close()
             self.open_file()
             self.play_video()
+            self.Read_have_done()
+            # self.skip.set(1)
+            # self.skip=BooleanVar()
         self.window.mainloop()
 
     def draw_roi(self):
@@ -290,13 +332,18 @@ class videoGUI:
                     self.start_y = y
                     self.end_x = x2
                     self.end_y = y2
-                    self.label_done.grid()
+                    # self.label_done.grid()
+                    self.label_done["text"] = "Done"
+                    self.label_done["foreground"] = "green"
                     if x == 0 and y == 0 and x2 == 0 and y2 == 0:
-                        self.label_done.grid_remove()
+                        self.label_done["text"] = "Not done"
+                        self.label_done["foreground"] = "red"
                 except:
-                    self.label_done.grid_remove()
+                    self.label_done["text"] = "Not done"
+                    self.label_done["foreground"] = "red"
             else:
-                self.label_done.grid_remove()
+                self.label_done["text"] = "Not done"
+                self.label_done["foreground"] = "red"
 
         if not self.pause:
             self.btn_play['state'] = tkinter.DISABLED
@@ -328,7 +375,7 @@ class videoGUI:
             return
         self.open_file()
 
-    def pre_file(self):
+    def Pre_file(self):
         self.readfile_flag = True
         self.start_x = 0
         self.start_y = 0
@@ -346,7 +393,7 @@ class videoGUI:
         self.start_x = self.start_y = self.end_x = self.end_y = 0
         self.open_file()
 
-    def write_roi(self, heart_type):
+    def Write_roi(self, heart_type):
         fp = open("roi\\"+self.filename.split('\\')
                   [-1].split('.')[0]+".txt", "w")
         fp.write(heart_type + "\n")
@@ -355,21 +402,40 @@ class videoGUI:
         fp.close()
         self.start_x = self.start_y = self.end_x = self.end_y = 0
         self.next_file()
+        fp = open("done.txt", "a")
+        fp.write(self.filename.split('\\')[-1].split('.')[0])
+        fp.close()
 
-    def heart_a2c(self):
-        self.write_roi("A2C")
+    def Read_have_done(self):
+        self.done_set = set()
+        fp = open("done.txt", "r")
+        lines = fp.readline()
+        for line in lines:
+            self.done_set.add(line)
 
-    def heart_a3c(self):
-        self.write_roi("A3C")
+    def Heart_a2c(self):
+        self.Write_roi("A2C")
 
-    def heart_typeA(self):
-        self.write_roi("typeA")
+    def Heart_a3c(self):
+        self.Write_roi("A3C")
 
-    def heart_typeB(self):
-        self.write_roi("typeB")
+    def Heart_a4c(self):
+        self.Write_roi("A4C")
 
-    def heart_typeC(self):
-        self.write_roi("typeC")
+    def Heart_ta2c(self):
+        self.Write_roi("TISSUE_A2C")
+
+    def Heart_ta4c(self):
+        self.Write_roi("TISSUE_A4C")
+
+    def Heart_pmid(self):
+        self.Write_roi("PSAX_MID")
+
+    def Heart_pbasal(self):
+        self.Write_roi("PSAX_BASAL")
+
+    def Heart_papical(self):
+        self.Write_roi("PSAX_APICAL")
 
     def __del__(self):
         if self.cap.isOpened():
@@ -386,4 +452,5 @@ try:
     os.mkdir("roi")
 except:
     None
-videoGUI(Tk(), "Heart Roi")
+win = videoGUI(Tk(), "Heart Roi")
+videoGUI.run(win)
