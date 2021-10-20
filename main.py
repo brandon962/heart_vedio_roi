@@ -48,7 +48,8 @@ class videoGUI:
         self.init = True
         self.readfile_flag = True
         self.done_set = set()
-        self.skip = IntVar()
+        self.skip = True
+        self.CheckVar1 = IntVar()
 
     def run(self):
         # self.skip
@@ -64,12 +65,8 @@ class videoGUI:
         switch_frame = Frame(self.window, background='#282a36')
         switch_frame.pack(side=BOTTOM, pady=5)
 
-        # bottom_frame2 = Frame(self.window, background='#282a36')
-        # bottom_frame2.pack(side=BOTTOM, pady=5)
-
         self.pause = False
-        self.canvas = Canvas(
-            top_frame, background='#282a36', highlightthickness=0)
+        self.canvas = Canvas(top_frame, background='#282a36', highlightthickness=0)
 
         self.canvas.bind("<ButtonPress-1>", self.btn1_func)
         self.canvas.bind("<ButtonRelease-1>", self.btn1_func)
@@ -78,15 +75,18 @@ class videoGUI:
 
         # info
         self.label_info_name = Label(info_frame, text='File name\nSerial number\nType',
-                                     width=10, background='#282a36', foreground='white', justify=LEFT, anchor="w", font=("Helvetica", "11"))
+                                     width=10, background='#282a36', foreground='white', justify=LEFT,
+                                     anchor="w", font=("Helvetica", "11"))
         self.label_info_name.grid(row=0, column=0, padx=0, pady=5)
         self.label_info_content = Label(info_frame, text=' :  A3VF7I82\n :  10004\n :',
-                                        width=17, background='#282a36', foreground='white', justify=LEFT, anchor="w", font=("Helvetica", "11"))
+                                        width=17, background='#282a36', foreground='white', justify=LEFT,
+                                        anchor="w", font=("Helvetica", "11"))
         self.label_info_content.grid(row=0, column=1, padx=0, pady=5)
 
         # type button
         self.label_done = Label(Label_frame, text='Done',
-                                width=12, background='#282a36', foreground='green', justify=LEFT, anchor="w", font=("Helvetica", "11"))
+                                width=12, background='#282a36', foreground='green', justify=LEFT, anchor="w",
+                                font=("Helvetica", "11"))
         self.label_done.grid(row=0, column=0, padx=5, pady=5)
 
         self.btn_a2c = Button(Label_frame, text="A2C",
@@ -106,7 +106,7 @@ class videoGUI:
         self.btn_ta2c.grid(row=4, column=0, padx=10, pady=10)
 
         self.btn_ta4c = Button(Label_frame, text="TISSUE A4C",
-                               width=15, command=self.Heart_ta4c, background='#23252f', foreground='white')
+                               width=15, command=self.Heart_ta4c, background="#23252f", foreground='white')
         self.btn_ta4c.grid(row=4, column=1, padx=10, pady=10)
 
         self.btn_pmid = Button(Label_frame, text="PSAX-MID",
@@ -121,12 +121,10 @@ class videoGUI:
                                   width=15, command=self.Heart_papical, background='#23252f', foreground='white')
         self.btn_papical.grid(row=3, column=1, padx=10, pady=10)
 
-        self.CheckVar1 = IntVar()
         # pre Button
-        # self.check_skip = Checkbutton(switch_frame, text='Skip Done', background='#282a36', foreground='white', variable = self.CheckVar1, onvalue = 1, offvalue = 0,)
-        # self.check_skip.grid(row=0,column=0,padx=0,pady=0)
-        self.check_skip = Checkbutton(switch_frame, text="Skip Done", variable=self.CheckVar1, onvalue=1, offvalue=0, fg='white',
-                                      selectcolor='#23252f', bg="#282a36", activebackground='#282a36', justify=LEFT, anchor="w", width=13, height=3)
+        self.check_skip = Checkbutton(switch_frame, text="Skip Done", variable=self.CheckVar1, onvalue=1,                          offvalue=0,
+                                      fg='white', selectcolor='#23252f', bg="#282a36", command=self.If_check,
+                                      activebackground='#282a36', justify=LEFT, anchor="w", width=13, height=3)
         self.check_skip.grid(row=0, column=0, padx=0, pady=0)
 
         # self.check_skip.pack()
@@ -158,11 +156,10 @@ class videoGUI:
             fp = open("log.txt", "r")
             self.file_ptr = int(fp.readline())
             fp.close()
-            self.open_file()
+            self.next_file()
             self.play_video()
             self.Read_have_done()
-            # self.skip.set(1)
-            # self.skip=BooleanVar()
+            self.CheckVar1.set(1)
         self.window.mainloop()
 
     def draw_roi(self):
@@ -175,8 +172,8 @@ class videoGUI:
 
         self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, self.start_y-5,
                            self.start_x+5, self.start_y+5, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, (self.start_y+self.end_y) /
-                           2-5, self.start_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, (self.start_y+self.end_y)/2-5,
+                           self.start_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
         self.roi_sq.append(self.canvas.create_rectangle(self.start_x-5, self.end_y-5,
                            self.start_x+5, self.end_y+5, outline="#F00", width=1, fill="white"))
         self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-5, self.start_y-5,
@@ -185,26 +182,21 @@ class videoGUI:
                            self.end_x+5, self.start_y+5, outline="#F00", width=1, fill="white"))
         self.roi_sq.append(self.canvas.create_rectangle((self.start_x+self.end_x)/2-5, self.end_y-5,
                            (self.start_x+self.end_x)/2+5, self.end_y+5, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-5, (self.start_y+self.end_y) /
-                           2-5, self.end_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
-        self.roi_sq.append(self.canvas.create_rectangle(
-            self.end_x-5, self.end_y-5, self.end_x+5, self.end_y+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-5, (self.start_y+self.end_y) / 2-5,
+                           self.end_x+5, (self.start_y+self.end_y)/2+5, outline="#F00", width=1, fill="white"))
+        self.roi_sq.append(self.canvas.create_rectangle(self.end_x-5, self.end_y-5, self.end_x+5,
+                           self.end_y+5, outline="#F00", width=1, fill="white"))
 
     def btn1_func(self, event):
         if str(event.type) == 'ButtonPress':
-            # print("start at", event.x, event.y)
-            # if self.scale_flag_ew == self.scale_flag_nesw == self.scale_flag_ns == self.scale_flag_nwse == False:
-            # self.start_x = event.x
-            # self.start_y = event.y
             self.draw_flag = True
         elif str(event.type) == 'ButtonRelease':
-            # print("end at", event.x, event.y)
-            # print()
             self.draw_flag = False
             self.scale_flag_nwse = False
             self.new_flag = False
             self.new_start_flag = True
-            self.scale_flag_we = self.scale_flag_we1 = self.scale_flag_ns = self.scale_flag_ns1 = self.scale_flag_nwse = self.scale_flag_nwse1 = self.scale_flag_nesw = self.scale_flag_nesw1 = False
+            self.scale_flag_we = self.scale_flag_we1 = self.scale_flag_ns = self.scale_flag_ns1 = False
+            self.scale_flag_nwse = self.scale_flag_nwse1 = self.scale_flag_nesw = self.scale_flag_nesw1 = False
             if self.draw_flag == False:
                 if (self.start_x > self.end_x):
                     self.start_x, self.end_x = self.end_x, self.start_x
@@ -215,7 +207,9 @@ class videoGUI:
         if self.start_x == self.start_y == self.end_x == self.end_y == 0:
             self.new_flag = True
 
-        if self.scale_flag_nwse == True or (self.new_flag == False and (event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > self.start_y-5 and event.y < self.start_y+5)):
+        if self.scale_flag_nwse == True or (self.new_flag == False and
+                                            (event.x > self.start_x-5 and event.x < self.start_x+5 and
+                                             event.y > self.start_y-5 and event.y < self.start_y+5)):
             self.canvas.config(cursor="size_nw_se")
             if self.draw_flag == True:
                 self.scale_flag_nwse = True
@@ -274,11 +268,6 @@ class videoGUI:
                 self.end_x = event.x
                 self.end_y = event.y
                 self.draw_roi()
-        # if self.draw_flag == False:
-        #     if (self.start_x > self.end_x):
-        #         self.start_x, self.end_x = self.end_x, self.start_x
-        #     if (self.start_y > self.end_y):
-        #         self.start_y, self.end_y = self.end_y, self.start_y
 
     def open_file(self):
         self.pause = False
@@ -297,11 +286,7 @@ class videoGUI:
                 return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         # replay the video
         except:
-            # self.cap = cv2.VideoCapture(self.filename)
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            # self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-            # self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-            # self.canvas.config(width=self.width, height=self.height)
             if self.cap.isOpened():
                 ret, frame = self.cap.read()
                 return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -316,8 +301,7 @@ class videoGUI:
 
         if self.readfile_flag:
             self.readfile_flag = False
-            file_path = str("roi\\"+self.filename.split('\\')
-                            [-1].split('.')[0]+".txt")
+            file_path = str("roi\\"+self.filename.split('\\')[-1].split('.')[0]+".txt")
             if os.path.isfile(file_path):
                 fp = open(file_path)
                 try:
@@ -328,12 +312,10 @@ class videoGUI:
                     y = int(y)
                     x2 = int(x2)
                     y2 = int(y2)
-                    # print(type, x, y, x2, y2)
                     self.start_x = x
                     self.start_y = y
                     self.end_x = x2
                     self.end_y = y2
-                    # self.label_done.grid()
                     self.label_done["text"] = "Done"
                     self.label_done["foreground"] = "green"
                     if x == 0 and y == 0 and x2 == 0 and y2 == 0:
@@ -365,6 +347,13 @@ class videoGUI:
         self.end_y = 0
         self.readfile_flag = True
         self.file_ptr += 1
+
+        if self.skip == True:
+            while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
+                self.file_ptr += 1
+        print(filelist[self.file_ptr].split('\\')[-1].split('.')[0])
+        print(self.done_set)
+
         fp = open("log.txt", "w")
         fp.write(str(self.file_ptr))
         fp.close()
@@ -383,6 +372,11 @@ class videoGUI:
         self.end_x = 0
         self.end_y = 0
         self.file_ptr -= 1
+
+        if self.skip == True:
+            while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
+                self.file_ptr -= 1
+
         fp = open("log.txt", "w")
         fp.write(str(self.file_ptr))
         fp.close()
@@ -395,24 +389,32 @@ class videoGUI:
         self.open_file()
 
     def Write_roi(self, heart_type):
-        fp = open("roi\\"+self.filename.split('\\')
-                  [-1].split('.')[0]+".txt", "w")
+        fp = open("roi\\"+self.filename.split('\\')[-1].split('.')[0]+".txt", "w")
         fp.write(heart_type + "\n")
         fp.write(str(self.start_x)+" "+str(self.start_y) + "\n")
         fp.write(str(self.end_x)+" "+str(self.end_y))
         fp.close()
         self.start_x = self.start_y = self.end_x = self.end_y = 0
-        self.next_file()
         fp = open("done.txt", "a")
         fp.write(self.filename.split('\\')[-1].split('.')[0])
+        fp.write("\n")
         fp.close()
+        self.next_file()
 
     def Read_have_done(self):
         self.done_set = set()
         fp = open("done.txt", "r")
-        lines = fp.readline()
+        lines = fp.readlines()
         for line in lines:
+            line = line.replace("\n", "")
             self.done_set.add(line)
+        print(self.done_set)
+
+    def If_check(self):
+        if self.CheckVar1.get() == 1:
+            self.skip = True
+        elif self.CheckVar1.get() == 0:
+            self.skip = False
 
     def Heart_a2c(self):
         self.Write_roi("A2C")
