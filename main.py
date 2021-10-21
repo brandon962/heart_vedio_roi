@@ -6,9 +6,35 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
+import csv
+import tkinter as tk
 
 nowPath = os.getcwd()
 filelist = []
+
+class MyDialog(object):
+    def __init__(self, parent_window, window_title):
+        self.window = Toplevel(parent_window)
+        self.window.title(window_title)
+        self.window.configure(background='#282a36')
+        self.var = StringVar()
+        self.top_frame = Frame(self.window,background='#282a36')
+        self.top_frame.pack(side=TOP)
+        self.botton_frame = Frame(self.window,background='#282a36')
+        self.botton_frame.pack(side=BOTTOM)
+
+        self.btn = Button(self.botton_frame,text='ok',command=self.btn_func)
+        self.btn.grid()
+
+    def run(self):
+        self.window.deiconify()
+        self.window.wait_window()
+        value = self.var.get()
+        return value
+    
+    def btn_func(self):
+        self.var.set('123')
+        self.window.destroy()
 
 
 def walk(path):
@@ -22,7 +48,6 @@ def walk(path):
 
 
 class videoGUI:
-
     def __init__(self, window, window_title):
         self.window = window
         self.window.title(window_title)
@@ -50,6 +75,8 @@ class videoGUI:
         self.done_set = set()
         self.skip = True
         self.CheckVar1 = IntVar()
+        self.patient_type = []
+        self.patient_index = []
 
     def run(self):
         # self.skip
@@ -72,6 +99,13 @@ class videoGUI:
         self.canvas.bind("<ButtonRelease-1>", self.btn1_func)
         self.canvas.bind('<Motion>', self.btn1_motion)
         self.canvas.pack()
+
+        self.main_menu = Menu(self.window)
+        self.window.config(menu=self.main_menu)
+        # self.main_menu.add_command(label='file')
+        self.file_menu=Menu(self.main_menu,tearoff=0)
+        self.file_menu.add_command(label='all',command=self.File_menu_all)
+        self.main_menu.add_cascade(label='file',menu=self.file_menu)
 
         # info
         self.label_info_name = Label(info_frame, text='File name\nSerial number\nType',
@@ -154,12 +188,13 @@ class videoGUI:
         if self.init:
             self.init = False
             fp = open("log.txt", "r")
-            self.file_ptr = int(fp.readline())
+            self.file_ptr = int(fp.readline())-1
             fp.close()
             self.next_file()
             self.play_video()
             self.Read_have_done()
             self.CheckVar1.set(1)
+            self.Read_patient_type()
         self.window.mainloop()
 
     def draw_roi(self):
@@ -351,8 +386,8 @@ class videoGUI:
         if self.skip == True:
             while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
                 self.file_ptr += 1
-        print(filelist[self.file_ptr].split('\\')[-1].split('.')[0])
-        print(self.done_set)
+        # print(filelist[self.file_ptr].split('\\')[-1].split('.')[0])
+        # print(self.done_set)
 
         fp = open("log.txt", "w")
         fp.write(str(self.file_ptr))
@@ -408,7 +443,7 @@ class videoGUI:
         for line in lines:
             line = line.replace("\n", "")
             self.done_set.add(line)
-        print(self.done_set)
+        # print(self.done_set)
 
     def If_check(self):
         if self.CheckVar1.get() == 1:
@@ -416,6 +451,17 @@ class videoGUI:
         elif self.CheckVar1.get() == 0:
             self.skip = False
 
+    def Read_patient_type(self):
+        with open("patient_type.csv","r",newline="") as file:
+            reader = csv.reader(file)
+            for read in reader:
+                self.patient_index.append(read[0])
+                self.patient_type.append(read[1:])
+
+    def File_menu_all(self):
+        self.result = MyDialog(self.window, 'all').run()
+        print(self.result)
+                
     def Heart_a2c(self):
         self.Write_roi("A2C")
 
