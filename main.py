@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import messagebox
 import tkinter
 import PIL.Image
-import PIL.ImageTk
+import PIL.ImageTkS
 import cv2
 import os
 import csv
@@ -428,8 +428,6 @@ class videoGUI:
         if self.skip == True:
             while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
                 self.file_ptr += 1
-        # print(filelist[self.file_ptr].split('\\')[-1].split('.')[0])
-        # print(self.done_set)
 
         fp = open("log\\log.txt", "w")
         fp.write(str(self.file_ptr))
@@ -489,7 +487,6 @@ class videoGUI:
         for line in lines:
             line = line.replace("\n", "")
             self.done_set.add(line)
-        # print(self.done_set)
 
     def If_check(self):
         if self.CheckVar1.get() == 1:
