@@ -573,5 +573,9 @@ try:
     os.mkdir("roi")
 except:
     None
+try:
+    os.mkdir("log")
+except:
+    None
 win = videoGUI(Tk(), "Heart Roi")
 videoGUI.run(win)
