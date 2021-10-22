@@ -569,13 +569,6 @@ fp = open("log\\file_list.txt", "r")
 filelist = fp.readlines()
 fp.close()
 print("file number : ", len(filelist))
-try:
-    os.mkdir("roi")
-except:
-    None
-try:
-    os.mkdir("log")
-except:
-    None
+
 win = videoGUI(Tk(), "Heart Roi")
 videoGUI.run(win)

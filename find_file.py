@@ -19,6 +19,16 @@ def walk(path):
                 patient.add(subpath.split('\\')[-2])
 
 
+try:
+    os.mkdir("roi")
+except:
+    None
+try:
+    os.mkdir("log")
+except:
+    None
+
+
 walk(nowPath)
 fp = open("log\\file_list.txt", "w")
 for file in filelist:

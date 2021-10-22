@@ -1,5 +1,14 @@
 import os
 
+try:
+    os.mkdir("roi")
+except:
+    None
+try:
+    os.mkdir("log")
+except:
+    None
+
 fp = open("log\done.txt", "w")
 fp.close()
 
