@@ -11,30 +11,63 @@ import tkinter as tk
 
 nowPath = os.getcwd()
 filelist = []
+typelsit = ["A2C", "A3C", "A4C", "PSAX_MID", "PSAX_BASAL", "PSAX_APICAL", "TISSUE_A2C", "TISSUE_A4C"]
+
 
 class MyDialog(object):
-    def __init__(self, parent_window, window_title):
+    def __init__(self, parent_window, window_title, dset):
         self.window = Toplevel(parent_window)
         self.window.title(window_title)
+        self.window.geometry("200x220")
         self.window.configure(background='#282a36')
         self.var = StringVar()
-        self.top_frame = Frame(self.window,background='#282a36')
-        self.top_frame.pack(side=TOP)
-        self.botton_frame = Frame(self.window,background='#282a36')
-        self.botton_frame.pack(side=BOTTOM)
+        self.done_set = dset
 
-        self.btn = Button(self.botton_frame,text='ok',command=self.btn_func)
+        self.top_frame = Frame(self.window, background='#282a36')
+        self.top_frame.pack(side=TOP)
+
+        self.lbox = Listbox(self.top_frame)
+        self.create_list(window_title)
+        self.lbox.bind('<<ListboxSelect>>', self.curSelect)
+        self.lbox.grid(pady=10)
+
+        self.btn = Button(self.top_frame, text='ok', command=self.btn_func)
         self.btn.grid()
+
+    def curSelect(self, e):
+        self.var.set(self.lbox.get(self.lbox.curselection()))
 
     def run(self):
         self.window.deiconify()
         self.window.wait_window()
-        value = self.var.get()
-        return value
-    
+        return self.var.get().split('-')[-1]
+
     def btn_func(self):
-        self.var.set('123')
         self.window.destroy()
+
+    def create_list(self, type):
+        if type == "All":
+
+            for i in range(len(filelist)):
+                self.lbox.insert(i, filelist[i].split('\\')[-2] + "-" + filelist[i].split('\\')[-1].split('.')[0])
+            for i in range(len(filelist)):
+                if filelist[i].split('\\')[-1].split('.')[0] in self.done_set:
+                    self.lbox.itemconfig(i, bg='#B4E9AF')
+        # if type == "All":
+        elif type == "Not Finished":
+            i = 0
+            for file in filelist:
+                if file.split('\\')[-1].split('.')[0] not in self.done_set:
+                    self.lbox.insert(i, file.split('\\')[-2] + "-" + file.split('\\')[-1].split('.')[0])
+                    i += 1
+
+        elif type == "Finished":
+            i = 0
+            for file in filelist:
+                if file.split('\\')[-1].split('.')[0] in self.done_set:
+                    self.lbox.insert(i, file.split('\\')[-2] + "-" + file.split('\\')[-1].split('.')[0])
+                    self.lbox.itemconfig(i, bg='B4E9AF')
+                    i += 1
 
 
 def walk(path):
@@ -98,21 +131,23 @@ class videoGUI:
         self.canvas.bind("<ButtonPress-1>", self.btn1_func)
         self.canvas.bind("<ButtonRelease-1>", self.btn1_func)
         self.canvas.bind('<Motion>', self.btn1_motion)
-        self.canvas.pack()
+        self.canvas.pack(padx=10)
 
-        self.main_menu = Menu(self.window)
+        self.main_menu = Menu(self.window, background="#23252f", foreground='white')
         self.window.config(menu=self.main_menu)
         # self.main_menu.add_command(label='file')
-        self.file_menu=Menu(self.main_menu,tearoff=0)
-        self.file_menu.add_command(label='all',command=self.File_menu_all)
-        self.main_menu.add_cascade(label='file',menu=self.file_menu)
+        self.file_menu = Menu(self.main_menu, tearoff=0)
+        self.file_menu.add_command(label='Not Finished', command=self.File_menu_not_finished)
+        self.file_menu.add_command(label='Finished', command=self.fileMenuFinished)
+        self.file_menu.add_command(label='All', command=self.File_menu_all)
+        self.main_menu.add_cascade(label='file', menu=self.file_menu)
 
         # info
         self.label_info_name = Label(info_frame, text='File name\nSerial number\nType',
                                      width=10, background='#282a36', foreground='white', justify=LEFT,
                                      anchor="w", font=("Helvetica", "11"))
         self.label_info_name.grid(row=0, column=0, padx=0, pady=5)
-        self.label_info_content = Label(info_frame, text=' :  A3VF7I82\n :  10004\n :',
+        self.label_info_content = Label(info_frame, text=' :  \n :   \n :',
                                         width=17, background='#282a36', foreground='white', justify=LEFT,
                                         anchor="w", font=("Helvetica", "11"))
         self.label_info_content.grid(row=0, column=1, padx=0, pady=5)
@@ -155,6 +190,10 @@ class videoGUI:
                                   width=15, command=self.Heart_papical, background='#23252f', foreground='white')
         self.btn_papical.grid(row=3, column=1, padx=10, pady=10)
 
+        self.btn_unknow = Button(Label_frame, text="Unknow",
+                                 width=15, command=self.heart_unknow, background="#23252f", foreground='white')
+        self.btn_unknow.grid(row=5, column=0, padx=10, pady=10)
+
         # pre Button
         self.check_skip = Checkbutton(switch_frame, text="Skip Done", variable=self.CheckVar1, onvalue=1,                          offvalue=0,
                                       fg='white', selectcolor='#23252f', bg="#282a36", command=self.If_check,
@@ -187,7 +226,7 @@ class videoGUI:
 
         if self.init:
             self.init = False
-            fp = open("log.txt", "r")
+            fp = open("log\\log.txt", "r")
             self.file_ptr = int(fp.readline())-1
             fp.close()
             self.next_file()
@@ -201,7 +240,8 @@ class videoGUI:
         self.canvas.delete(self.roi_id)
         for i in self.roi_sq:
             self.canvas.delete(i)
-
+        if self.start_x == self.start_y == self.end_x == self.end_y == 0:
+            return
         self.roi_id = self.canvas.create_rectangle(
             self.start_x, self.start_y, self.end_x, self.end_y, outline="#F00", width=2)
 
@@ -308,6 +348,8 @@ class videoGUI:
         self.pause = False
         self.filename = filelist[self.file_ptr]
         print(self.file_ptr, self.filename)
+        self.label_info_content['text'] = " : " + \
+            self.filename.split('\\')[-1].split('.')[0]+"\n : "+self.filename.split('\\')[-2]+"\n : "
         self.cap = cv2.VideoCapture(self.filename)
         self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -389,7 +431,7 @@ class videoGUI:
         # print(filelist[self.file_ptr].split('\\')[-1].split('.')[0])
         # print(self.done_set)
 
-        fp = open("log.txt", "w")
+        fp = open("log\\log.txt", "w")
         fp.write(str(self.file_ptr))
         fp.close()
 
@@ -408,11 +450,11 @@ class videoGUI:
         self.end_y = 0
         self.file_ptr -= 1
 
-        if self.skip == True:
-            while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
-                self.file_ptr -= 1
+        # if self.skip == True:
+        #     while(filelist[self.file_ptr].split('\\')[-1].split('.')[0] in self.done_set):
+        #         self.file_ptr -= 1
 
-        fp = open("log.txt", "w")
+        fp = open("log\\log.txt", "w")
         fp.write(str(self.file_ptr))
         fp.close()
         if self.file_ptr < 0:
@@ -430,15 +472,19 @@ class videoGUI:
         fp.write(str(self.end_x)+" "+str(self.end_y))
         fp.close()
         self.start_x = self.start_y = self.end_x = self.end_y = 0
-        fp = open("done.txt", "a")
+        fp = open("log\\done.txt", "a")
         fp.write(self.filename.split('\\')[-1].split('.')[0])
         fp.write("\n")
         fp.close()
+        self.done_set.add(self.filename.split('\\')[-1].split('.')[0])
+        if heart_type != 'Unknow':
+            self.patient_type[self.patient_index.index(self.filename.split('\\')[-2])][typelsit.index(heart_type)] = 1
+            self.writePatientCsv()
         self.next_file()
 
     def Read_have_done(self):
         self.done_set = set()
-        fp = open("done.txt", "r")
+        fp = open("log\\done.txt", "r")
         lines = fp.readlines()
         for line in lines:
             line = line.replace("\n", "")
@@ -452,16 +498,42 @@ class videoGUI:
             self.skip = False
 
     def Read_patient_type(self):
-        with open("patient_type.csv","r",newline="") as file:
+        with open("log\\patient_type.csv", "r", newline="") as file:
             reader = csv.reader(file)
             for read in reader:
                 self.patient_index.append(read[0])
                 self.patient_type.append(read[1:])
 
     def File_menu_all(self):
-        self.result = MyDialog(self.window, 'all').run()
-        print(self.result)
-                
+        self.result = MyDialog(self.window, 'All', self.done_set).run()
+        self.file_ptr = self.findFileIndex(self.result)
+        self.open_file()
+
+    def File_menu_not_finished(self):
+        self.result = MyDialog(self.window, 'Not Finished', self.done_set).run()
+        self.file_ptr = self.findFileIndex(self.result)
+        self.open_file()
+
+    def fileMenuFinished(self):
+        self.result = MyDialog(self.window, 'Finished', self.done_set).run()
+        self.file_ptr = self.findFileIndex(self.result)
+        self.open_file()
+
+    def findFileIndex(self, filename):
+        for i in range(len(filelist)):
+            if filelist[i].find(filename) != -1:
+                return i
+
+    def writePatientCsv(self):
+        with open("log\\patient_type.csv", "w", newline='') as file:
+            writer = csv.writer(file)
+            for i in range(len(self.patient_index)):
+                temp = []
+                temp.append(self.patient_index[i])
+                for j in self.patient_type[i]:
+                    temp.append(j)
+                writer.writerow(temp)
+
     def Heart_a2c(self):
         self.Write_roi("A2C")
 
@@ -486,6 +558,9 @@ class videoGUI:
     def Heart_papical(self):
         self.Write_roi("PSAX_APICAL")
 
+    def heart_unknow(self):
+        self.Write_roi("Unknow")
+
     def __del__(self):
         if self.cap.isOpened():
             self.cap.release()
@@ -493,7 +568,7 @@ class videoGUI:
 ##### End Class #####
 
 
-fp = open("file_list.txt", "r")
+fp = open("log\\file_list.txt", "r")
 filelist = fp.readlines()
 fp.close()
 print("file number : ", len(filelist))

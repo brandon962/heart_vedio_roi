@@ -7,6 +7,7 @@ filelist = []
 patient = set()
 patient_csv = []
 
+
 def walk(path):
     for item in os.listdir(path):
         subpath = os.path.join(path, item)
@@ -17,8 +18,9 @@ def walk(path):
                 filelist.append(subpath)
                 patient.add(subpath.split('\\')[-2])
 
+
 walk(nowPath)
-fp = open("file_list.txt", "w")
+fp = open("log\\file_list.txt", "w")
 for file in filelist:
     print(file)
     fp.write(file+"\n")
@@ -27,23 +29,20 @@ fp.close()
 patient_sort = sorted(patient)
 print(patient_sort)
 
-with open("patient_type.csv", "w", newline='') as file:
+with open("log\\patient_type.csv", "w", newline='') as file:
     writer = csv.writer(file)
     for num in patient_sort:
-        print("a ",num)
-        writer.writerow([str(num),0,0,0,0,0,0,0,0])
+        writer.writerow([str(num), 0, 0, 0, 0, 0, 0, 0, 0])
         # writer.writerow([str(123)])
-    
 
 
-
-fp = open("log.txt", "w")
+fp = open("log\\log.txt", "w")
 fp.write("0")
 fp.close()
 
-try :
-    fp = open("done.txt", "r")
+try:
+    fp = open("log\\done.txt", "r")
     fp.close()
 except:
-    fp = open("done.txt","w")
+    fp = open("log\\done.txt", "w")
     fp.close()

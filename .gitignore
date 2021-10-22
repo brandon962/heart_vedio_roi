@@ -1,3 +1,5 @@
-*.avi
-*.txt
-*.png
+.vscode/
+files/
+build/
+dist/
+__pycache__/

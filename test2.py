@@ -12,7 +12,7 @@ def demo(master):
         listbox.insert("end", item)
 
     # this changes the background colour of the 2nd item
-    listbox.itemconfig(1, {'bg':'red'})
+    listbox.itemconfig(1, {'bg': 'red'})
 
     # this changes the font color of the 4th item
     listbox.itemconfig(3, {'fg': 'blue'})
