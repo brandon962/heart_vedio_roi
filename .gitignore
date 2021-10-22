@@ -3,3 +3,6 @@ files/
 build/
 dist/
 __pycache__/
+roi/
+log/
+*.spec

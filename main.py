@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import messagebox
 import tkinter
 import PIL.Image
-import PIL.ImageTkS
+import PIL.ImageTk
 import cv2
 import os
 import csv
