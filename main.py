@@ -9,7 +9,7 @@ import os
 import csv
 import tkinter as tk
 
-nowPath = os.getcwd()
+# nowPath = os.getcwd()
 filelist = []
 typelsit = ["A2C", "A3C", "A4C", "PSAX_MID", "PSAX_BASAL", "PSAX_APICAL", "TISSUE_A2C", "TISSUE_A4C"]
 
@@ -222,7 +222,7 @@ class videoGUI:
             switch_frame, text="Pause", width=15, command=self.pause_video, background='#23252f', foreground='white')
         self.btn_pause.grid(row=2, column=1, padx=5, pady=5)
 
-        self.delay = 5  # ms
+        self.delay = 1  # ms
 
         if self.init:
             self.init = False
@@ -283,50 +283,50 @@ class videoGUI:
             self.new_flag = True
 
         if self.scale_flag_nwse == True or (self.new_flag == False and
-                                            (event.x > self.start_x-5 and event.x < self.start_x+5 and
-                                             event.y > self.start_y-5 and event.y < self.start_y+5)):
+                                            (event.x > self.start_x-7 and event.x < self.start_x+7 and
+                                             event.y > self.start_y-7 and event.y < self.start_y+7)):
             self.canvas.config(cursor="size_nw_se")
             if self.draw_flag == True:
                 self.scale_flag_nwse = True
                 self.start_x, self.start_y = event.x, event.y
                 self.draw_roi()
-        elif self.scale_flag_nwse1 == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
+        elif self.scale_flag_nwse1 == True or event.x > self.end_x-7 and event.x < self.end_x+7 and event.y > self.end_y-7 and event.y < self.end_y+7:
             self.canvas.config(cursor="size_nw_se")
             if self.draw_flag == True:
                 self.scale_flag_nwse1 = True
                 self.end_x, self.end_y = event.x, event.y
                 self.draw_roi()
-        elif self.scale_flag_nesw == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > self.start_y-5 and event.y < self.start_y+5:
+        elif self.scale_flag_nesw == True or event.x > self.end_x-7 and event.x < self.end_x+7 and event.y > self.start_y-7 and event.y < self.start_y+7:
             self.canvas.config(cursor="size_ne_sw")
             if self.draw_flag == True:
                 self.scale_flag_nesw = True
                 self.end_x, self.start_y = event.x, event.y
                 self.draw_roi()
-        elif self.scale_flag_nesw1 == True or event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
+        elif self.scale_flag_nesw1 == True or event.x > self.start_x-7 and event.x < self.start_x+7 and event.y > self.end_y-7 and event.y < self.end_y+7:
             self.canvas.config(cursor="size_ne_sw")
             if self.draw_flag == True:
                 self.scale_flag_nesw1 = True
                 self.start_x, self.end_y = event.x, event.y
                 self.draw_roi()
-        elif self.scale_flag_we == True or event.x > self.start_x-5 and event.x < self.start_x+5 and event.y > (self.start_y+self.end_y)/2-5 and event.y < (self.start_y+self.end_y)/2+5:
+        elif self.scale_flag_we == True or event.x > self.start_x-7 and event.x < self.start_x+7 and event.y > (self.start_y+self.end_y)/2-7 and event.y < (self.start_y+self.end_y)/2+7:
             self.canvas.config(cursor="size_we")
             if self.draw_flag == True:
                 self.scale_flag_we = True
                 self.start_x = event.x
                 self.draw_roi()
-        elif self.scale_flag_we1 == True or event.x > self.end_x-5 and event.x < self.end_x+5 and event.y > (self.start_y+self.end_y)/2-5 and event.y < (self.start_y+self.end_y)/2+5:
+        elif self.scale_flag_we1 == True or event.x > self.end_x-7 and event.x < self.end_x+7 and event.y > (self.start_y+self.end_y)/2-7 and event.y < (self.start_y+self.end_y)/2+7:
             self.canvas.config(cursor="size_we")
             if self.draw_flag == True:
                 self.scale_flag_we1 = True
                 self.end_x = event.x
                 self.draw_roi()
-        elif self.scale_flag_ns == True or event.x > (self.start_x+self.end_x)/2-5 and event.x < (self.start_x+self.end_x)/2+5 and event.y > self.start_y-5 and event.y < self.start_y+5:
+        elif self.scale_flag_ns == True or event.x > (self.start_x+self.end_x)/2-7 and event.x < (self.start_x+self.end_x)/2+7 and event.y > self.start_y-7 and event.y < self.start_y+7:
             self.canvas.config(cursor="size_ns")
             if self.draw_flag == True:
                 self.scale_flag_ns = True
                 self.start_y = event.y
                 self.draw_roi()
-        elif self.scale_flag_ns1 == True or event.x > (self.start_x+self.end_x)/2-5 and event.x < (self.start_x+self.end_x)/2+5 and event.y > self.end_y-5 and event.y < self.end_y+5:
+        elif self.scale_flag_ns1 == True or event.x > (self.start_x+self.end_x)/2-7 and event.x < (self.start_x+self.end_x)/2+7 and event.y > self.end_y-7 and event.y < self.end_y+7:
             self.canvas.config(cursor="size_ns")
             if self.draw_flag == True:
                 self.scale_flag_ns1 = True
